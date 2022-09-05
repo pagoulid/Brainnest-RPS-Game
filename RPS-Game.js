@@ -11,22 +11,31 @@ let clickPromise = new Promise((resolve,reject)=>{resolve(`click event`)});
 
 const userPlay = (s) => {
     let pSelection = s.getAttribute("id");
-    console.log(`You picked ${pSelection}`);
+    let userText = `You picked ${pSelection}.Waiting for computer's guess...`;
+    clickOutput(userText,0);
+    console.log(userText);
     return pSelection;
 
 }
 
 const computerPlay = ()=>{
-   /* console.log('Waiting for computer/s guess...')*/
+   
     let condition =Math.round(Math.random()*2); /*Random Number between 0-2*/
     
-
+    let CPUText;
+    let timeTowait = 1000;/*Wait first for player selection message to appear...*/ 
     switch(condition){
         case 0:
+            CPUText = 'Computer picked rock...';
+            clickOutput(CPUText,timeTowait);
             return "rock";
         case 1:
+            CPUText = 'Computer picked paper...';
+            clickOutput(CPUText,timeTowait);
             return "paper";
         case 2:
+            CPUText = 'Computer picked scissor...';
+            clickOutput(CPUText,timeTowait);
             return "scissor";
     }
 }
@@ -38,23 +47,36 @@ const playRound = (pSelection,cSelection)=>{
     let userScore = userElement["beats "+cSelection];
     let computerScore = computerElement["beats "+pSelection];
 
+    let timeTowait = 2000;
+    let resultText;
+
     if(userScore!=computerScore){/*If players have the same score , they selected the same element*/ 
 
         if(userScore>computerScore){
-            return `${pSelection} beats ${cSelection}. You win!`;
+            resultText = `${pSelection} beats ${cSelection}. You win!`;
+            
         }
         else{
-            return `${cSelection} beats ${pSelection}. You lose!`;
+            resultText = `${cSelection} beats ${pSelection}. You lose!`;
+            
         }
 
     }
-    return `The result is draw because both players selected ${pSelection}`;
+    else{
+        resultText = `The result is draw because both players selected ${pSelection}`;
+    }
+    clickOutput(resultText,timeTowait);
+    return resultText;
+    
 }
 /*Functions*/
 /*MAIN*/ 
 let selections = document.querySelectorAll('.selection');
 selections.forEach((selection)=>{
- 
+    /*Promise chaining :
+    when element clicked retrieve player selection [userPlay()] then 
+    retrieve computer random selection [computerPlay()]
+     then finally define the result of the round [playRound()]*/ 
     selection.addEventListener('click',(e)=>{
 
         clickPromise.then(
@@ -64,7 +86,7 @@ selections.forEach((selection)=>{
                 return playerSelection;
             }
         ).then((playerSelection)=>{
-            console.log('Waiting for computer/s guess...');
+            /*console.log('Waiting for computer/s guess...');*/
             let computerSelection = computerPlay();
             return {"playerSelection":playerSelection,"computerSelection":computerSelection};
 
@@ -80,7 +102,14 @@ selections.forEach((selection)=>{
 });
 /*MAIN*/
 
-
+function clickOutput(text,timeTowait){
+    const headerNode = document.querySelector('.message');
+    
+    
+    headerNode.setAttribute('style','color:blue;');
+    setTimeout(()=>{headerNode.textContent = text;},timeTowait);
+    
+}
 /*
 function game(){
     let result;
