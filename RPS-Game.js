@@ -3,8 +3,9 @@ const rock ={"beats paper":0,"beats scissor":1,"beats rock":1}; /*score is 0 for
 const paper ={"beats paper":1,"beats scissor":0,"beats rock":1};
 const scissor ={"beats paper":1,"beats scissor":1,"beats rock":0};
 const elements ={"paper": paper,"scissor":scissor,"rock":rock};
-let playerScore = 0;
-let computerScore = 0;
+let playerScoreBoard = 0;
+let computerScoreBoard = 0;
+let fiveTimesScore = false;
 
 
 /*GLOBAL */ 
@@ -56,11 +57,26 @@ const playRound = (pSelection,cSelection)=>{
     if(userScore!=computerScore){/*If players have the same score , they selected the same element*/ 
 
         if(userScore>computerScore){
-            resultText = `${pSelection} beats ${cSelection}. You win!`;
+            playerScoreBoard+=1;
+            if(playerScoreBoard<5){
+                resultText = `${pSelection} beats ${cSelection}. You win!`;
+            }
+            else{
+                fiveTimesScore=true;
+                resultText = `Your Score:${playerScoreBoard}, Computer score:${computerScoreBoard}. You win!`;
+            }
+            
             
         }
         else{
-            resultText = `${cSelection} beats ${pSelection}. You lose!`;
+            computerScoreBoard+=1;
+            if(computerScoreBoard<5){
+                resultText = `${cSelection} beats ${pSelection}. You lose!`;
+            }
+            else{
+                fiveTimesScore=true;
+                resultText = `Your Score:${playerScoreBoard}, Computer score:${computerScoreBoard}. You lose!`;
+            }
             
         }
 
@@ -114,69 +130,42 @@ function clickOutput(text,timeTowait){
     setTimeout(()=>{headerNode.textContent = text;},timeTowait);
     
 }
-function setScore(result){
+async function setScore(result){
     /*If not draw then change score*/ 
-    if(!result.includes('draw')){
-        let condition = result.includes('win')?0:1;
-        let scoreNode
-        switch(condition){
-            case 0:
-                playerScore+=1;
-                scoreNode = document.querySelector('.player-score');
-                setTimeout(()=>{scoreNode.textContent=playerScore;},2500);
-                break;
-            case 1:
-                computerScore+=1;
-                scoreNode = document.querySelector('.computer-score');
-                setTimeout(()=>{scoreNode.textContent=computerScore;},2500);
-                break;
+    if(!fiveTimesScore){
+        if(!result.includes('draw')){
+            let condition = result.includes('win')?0:1;
+            let scoreNode;
+            switch(condition){
+                case 0:
+
+                    scoreNode = document.querySelector('.player-score');
+                    setTimeout(()=>{scoreNode.textContent=playerScoreBoard;},2500);
+
+                    break;
+                case 1:
+  
+                    scoreNode = document.querySelector('.computer-score');
+                    setTimeout(()=>{scoreNode.textContent=computerScoreBoard;},2500);
+                    break;
+            }
+    
         }
 
     }
+    else{
+        resetScore();
+    }
+    
 }
-/*
-function game(){
-    let result;
-    let userScore = 0;
-    let computerScore = 0;
-    console.log('Rock Paper Scissor Tournanment of 5 rounds');
-    console.log('Game starting...');
-    for(let i=0;i<5;i++){
-        console.log(`ROUND ${i+1}`);
+function resetScore(){
+    let scores = document.querySelectorAll('.score');
+    fiveTimesScore=false;
+    playerScoreBoard=0;
+    computerScoreBoard=0;
 
-        const pSelection = userPlay();
-        const cSelection = computerPlay();
-        result = playRound(pSelection,cSelection);
-        console.log(result);
-
-        if(result.includes('win')){
-            userScore+=1;
-        }
-        else if(result.includes('lose')){
-            computerScore+=1;
-        }
-
-
-    }
+    setTimeout(()=>{scores.forEach((score)=>{
+        score.textContent=0;
+    })},2500);
     
-    let gameCondition=userScore>computerScore?0:1;
-    console.log(`Your score: ${userScore}, CPU score: ${computerScore}.`)
-
-    switch(gameCondition){
-        case 0:
-            console.log('You lose!');
-            break;
-        case 1:
-            
-            if(userScore==computerScore){
-                console.log('No one wins');
-            }
-            else{
-                console.log('You win!');
-            }
-
-            
-    }
-    
-}*/
-/*Game*/ 
+}
