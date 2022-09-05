@@ -1,11 +1,14 @@
-/*GLOBAL OBJECTS*/
+/*GLOBAL */
 const rock ={"beats paper":0,"beats scissor":1,"beats rock":1}; /*score is 0 for false , 1 for true or same element*/
 const paper ={"beats paper":1,"beats scissor":0,"beats rock":1};
 const scissor ={"beats paper":1,"beats scissor":1,"beats rock":0};
 const elements ={"paper": paper,"scissor":scissor,"rock":rock};
+let playerScore = 0;
+let computerScore = 0;
 
-/*GLOBAL OBJECTS*/ 
-/*Functions*/ 
+
+/*GLOBAL */ 
+/*Main Functions*/ 
 let clickPromise = new Promise((resolve,reject)=>{resolve(`click event`)});
 
 
@@ -69,7 +72,7 @@ const playRound = (pSelection,cSelection)=>{
     return resultText;
     
 }
-/*Functions*/
+/*Main Functions*/
 /*MAIN*/ 
 let selections = document.querySelectorAll('.selection');
 selections.forEach((selection)=>{
@@ -95,8 +98,9 @@ selections.forEach((selection)=>{
             let computerSelection = choices.computerSelection;
             let result = playRound(playerSelection,computerSelection);
             return result;
-        }).then((Roundresult)=>{
-            console.log(Roundresult);
+        }).then((roundResult)=>{
+            setScore(roundResult);
+            console.log(roundResult);
         });
     });
 });
@@ -109,6 +113,26 @@ function clickOutput(text,timeTowait){
     headerNode.setAttribute('style','color:blue;');
     setTimeout(()=>{headerNode.textContent = text;},timeTowait);
     
+}
+function setScore(result){
+    /*If not draw then change score*/ 
+    if(!result.includes('draw')){
+        let condition = result.includes('win')?0:1;
+        let scoreNode
+        switch(condition){
+            case 0:
+                playerScore+=1;
+                scoreNode = document.querySelector('.player-score');
+                setTimeout(()=>{scoreNode.textContent=playerScore;},2500);
+                break;
+            case 1:
+                computerScore+=1;
+                scoreNode = document.querySelector('.computer-score');
+                setTimeout(()=>{scoreNode.textContent=computerScore;},2500);
+                break;
+        }
+
+    }
 }
 /*
 function game(){
