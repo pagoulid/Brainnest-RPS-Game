@@ -3,16 +3,21 @@ const rock ={"beats paper":0,"beats scissor":1,"beats rock":1}; /*score is 0 for
 const paper ={"beats paper":1,"beats scissor":0,"beats rock":1};
 const scissor ={"beats paper":1,"beats scissor":1,"beats rock":0};
 const elements ={"paper": paper,"scissor":scissor,"rock":rock};
-const Ifclicked = {"paper clicked":false,"scissor clicked":false,"rock clicked":false};
+
 /*GLOBAL OBJECTS*/ 
-const callbackFunc =    (s, callback) => {
+/*Functions*/ 
+let clickPromise = new Promise((resolve,reject)=>{resolve(`click event`)});
+
+
+const userPlay = (s) => {
     let pSelection = s.getAttribute("id");
-    callback(pSelection);
+    console.log(`You picked ${pSelection}`);
+    return pSelection;
 
 }
 
 const computerPlay = ()=>{
-    console.log('Waiting for computer/s guess...')
+   /* console.log('Waiting for computer/s guess...')*/
     let condition =Math.round(Math.random()*2); /*Random Number between 0-2*/
     
 
@@ -45,89 +50,37 @@ const playRound = (pSelection,cSelection)=>{
     }
     return `The result is draw because both players selected ${pSelection}`;
 }
-
+/*Functions*/
+/*MAIN*/ 
 let selections = document.querySelectorAll('.selection');
 selections.forEach((selection)=>{
-    /*let playerSelection = selection.getAttribute("id");
-    let clicked = Ifclicked[playerSelection+" clicked"];*/
+ 
     selection.addEventListener('click',(e)=>{
-        callbackFunc(selection,(playerSelection)=>{
-            console.log(`You picked ${playerSelection} !!! `);
-           
-                
+
+        clickPromise.then(
+            (msg)=>{
+                console.log(msg);
+                let playerSelection = userPlay(selection);
+                return playerSelection;
+            }
+        ).then((playerSelection)=>{
+            console.log('Waiting for computer/s guess...');
             let computerSelection = computerPlay();
+            return {"playerSelection":playerSelection,"computerSelection":computerSelection};
+
+        }).then((choices)=>{
+            let playerSelection = choices.playerSelection;
+            let computerSelection = choices.computerSelection;
             let result = playRound(playerSelection,computerSelection);
-            console.log(result);
-    
-        })
-
-    })
+            return result;
+        }).then((Roundresult)=>{
+            console.log(Roundresult);
+        });
+    });
 });
+/*MAIN*/
 
 
-/*
-const playerSelection = userPlay();
-const computerSelection = computerPlay();
-const gameResult = playRound(playerSelection,computerSelection);
-
-console.log(gameResult);
-
-game();*/
-
-
-/* Returns User/Cpu guess */
-/*function userPlay(){
-    let userGuess = prompt('It is Rock Paper Scissors time! Pick a guess:');
-
-    userGuess =userGuess.toLowerCase();
-    let validInput = guess=>(guess=="rock"||guess=="paper"||guess=="scissor");
-
-    while(!(validInput(userGuess))){
-        userGuess = prompt('Invalid Input.Please pick a valid guess.');
-        userGuess =userGuess.toLowerCase();
-    }
-
-    return userGuess;
-
-}*/
-/*function computerPlay(){
-    console.log('Waiting for computer/s guess...')
-    let condition =Math.round(Math.random()*2); 
-    
-
-    switch(condition){
-        case 0:
-            return "rock";
-        case 1:
-            return "paper";
-        case 2:
-            return "scissor";
-    }
-}*/
-/* Returns User/Cpu guess */
-/*Game*/
-/*
-function playRound(pSelection,cSelection){
-    let userElement = elements[pSelection];
-    let computerElement = elements[cSelection];
-
-    let userScore = userElement["beats "+cSelection];
-    let computerScore = computerElement["beats "+pSelection];
-
-    if(userScore!=computerScore){
-
-        if(userScore>computerScore){
-            return `${pSelection} beats ${cSelection}. You win!`;
-        }
-        else{
-            return `${cSelection} beats ${pSelection}. You lose!`;
-        }
-
-    }
-    return `The result is draw because both players selected ${pSelection}`;
-
-
-}*/
 /*
 function game(){
     let result;
