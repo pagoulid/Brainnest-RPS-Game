@@ -1,3 +1,16 @@
+/*MAIN FUNCTIONS*/ 
+    /*userPlay(selection) : returns player selection*/ 
+    /*computerPlay(selection): returns computer selection */
+    /** playRound(selection1,selection2) return score result given 2 selections */
+/*MAIN FUNCTIONS*/ 
+/* NESTED FUNCTIONS */
+    /* DOMOutput(className,text,timeToWait) : Save text to textContent of className's Node to appear to the DOM. timeToWait describes 
+    how long the text will wait before it appears on the DOM */
+
+/* NESTED FUNCTIONS */
+/*NOTE: ScoreBoard global vars for DOM manipulation*/
+/*NOTE: Score local vars to define which selection will be beaten*/
+
 /*GLOBAL */
 const rock ={"beats paper":0,"beats scissor":1,"beats rock":1}; /*score is 0 for false , 1 for true or same element*/
 const paper ={"beats paper":1,"beats scissor":0,"beats rock":1};
@@ -6,17 +19,16 @@ const elements ={"paper": paper,"scissor":scissor,"rock":rock};
 let playerScoreBoard = 0;
 let computerScoreBoard = 0;
 let fiveTimesScore = false;
-
-
 /*GLOBAL */ 
+
 /*Main Functions*/ 
-let clickPromise = new Promise((resolve,reject)=>{resolve(`click event`)});
+
 
 
 const userPlay = (s) => {
     let pSelection = s.getAttribute("id");
     let userText = `You picked ${pSelection}.Waiting for computer's guess...`;
-    clickOutput(userText,0);
+    DOMOutput('.message',userText,0);
     console.log(userText);
     return pSelection;
 
@@ -31,15 +43,15 @@ const computerPlay = ()=>{
     switch(condition){
         case 0:
             CPUText = 'Computer picked rock...';
-            clickOutput(CPUText,timeTowait);
+            DOMOutput('.message',CPUText,timeTowait);
             return "rock";
         case 1:
             CPUText = 'Computer picked paper...';
-            clickOutput(CPUText,timeTowait);
+            DOMOutput('.message',CPUText,timeTowait);
             return "paper";
         case 2:
             CPUText = 'Computer picked scissor...';
-            clickOutput(CPUText,timeTowait);
+            DOMOutput('.message',CPUText,timeTowait);
             return "scissor";
     }
 }
@@ -84,31 +96,35 @@ const playRound = (pSelection,cSelection)=>{
     else{
         resultText = `The result is draw because both players selected ${pSelection}`;
     }
-    clickOutput(resultText,timeTowait);
+    DOMOutput('.message',resultText,timeTowait);
     return resultText;
     
 }
+
+let clickPromise = new Promise((resolve,reject)=>{resolve(`click event`)});
 /*Main Functions*/
+
 /*MAIN*/ 
-let selections = document.querySelectorAll('.selection');
-selections.forEach((selection)=>{
-    /*Promise chaining :
+/*Implement main with Promise chaining :
     when element clicked retrieve player selection [userPlay()] then 
     retrieve computer random selection [computerPlay()]
-     then finally define the result of the round [playRound()]*/ 
+     then finally define the result of the round [playRound()]
+     and then finally set the relative score [setScore()]*/
+
+let selections = document.querySelectorAll('.selection');
+
+selections.forEach((selection)=>{
+     
     selection.addEventListener('click',(e)=>{
 
-        clickPromise.then(
-            (msg)=>{
+        clickPromise.then((msg)=>{
                 console.log(msg);
                 let playerSelection = userPlay(selection);
                 return playerSelection;
             }
         ).then((playerSelection)=>{
-            /*console.log('Waiting for computer/s guess...');*/
             let computerSelection = computerPlay();
             return {"playerSelection":playerSelection,"computerSelection":computerSelection};
-
         }).then((choices)=>{
             let playerSelection = choices.playerSelection;
             let computerSelection = choices.computerSelection;
@@ -122,50 +138,40 @@ selections.forEach((selection)=>{
 });
 /*MAIN*/
 
-function clickOutput(text,timeTowait){
-    const headerNode = document.querySelector('.message');
-    
-    
-    headerNode.setAttribute('style','color:blue;');
-    setTimeout(()=>{headerNode.textContent = text;},timeTowait);
-    
+function DOMOutput(className,text,timeTowait){
+    const Node = document.querySelector(className);
+    setTimeout(()=>{Node.textContent = text;},timeTowait);   
 }
 async function setScore(result){
     /*If not draw then change score*/ 
+    let timeToWait = 2500;
     if(!fiveTimesScore){
         if(!result.includes('draw')){
             let condition = result.includes('win')?0:1;
-            let scoreNode;
             switch(condition){
                 case 0:
-
-                    scoreNode = document.querySelector('.player-score');
-                    setTimeout(()=>{scoreNode.textContent=playerScoreBoard;},2500);
-
+                    DOMOutput('.player-score',playerScoreBoard,timeToWait);
                     break;
                 case 1:
-  
-                    scoreNode = document.querySelector('.computer-score');
-                    setTimeout(()=>{scoreNode.textContent=computerScoreBoard;},2500);
+                    DOMOutput('.computer-score',computerScoreBoard,timeToWait);
                     break;
             }
-    
         }
-
     }
     else{
-        resetScore();
+        fiveTimesScore=false;
+        playerScoreBoard=0;
+        computerScoreBoard=0;
+        resetScore(timeToWait);   
     }
     
 }
-function resetScore(){
+function resetScore(timeToWait){
     let scores = document.querySelectorAll('.score');
-    fiveTimesScore=false;
-    playerScoreBoard=0;
-    computerScoreBoard=0;
-
-    setTimeout(()=>{scores.forEach((score)=>{
-        score.textContent=0;
-    })},2500);
+    setTimeout(()=>{
+        scores.forEach((score)=>{
+            score.textContent=0;
+        });
+    },timeToWait);
     
 }
