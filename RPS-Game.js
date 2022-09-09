@@ -1,11 +1,14 @@
 /*MAIN FUNCTIONS*/ 
     /*userPlay(selection) : returns player selection*/ 
     /*computerPlay(selection): returns computer selection */
-    /** playRound(selection1,selection2) return score result given 2 selections */
+    /* playRound(selection1,selection2,maxScore) return score result given 2 selections.If one player reaches maxScore return 
+        final results*/
 /*MAIN FUNCTIONS*/ 
 /* NESTED FUNCTIONS */
     /* DOMOutput(className,text,timeToWait) : Save text to textContent of className's Node to appear to the DOM. timeToWait describes 
     how long the text will wait before it appears on the DOM */
+    /*setScore for DOM*/
+    /*resetScore for DOM*/
 
 /* NESTED FUNCTIONS */
 /*NOTE: ScoreBoard global vars for DOM manipulation*/
@@ -16,9 +19,9 @@ const rock ={"beats paper":0,"beats scissor":1,"beats rock":1}; /*score is 0 for
 const paper ={"beats paper":1,"beats scissor":0,"beats rock":1};
 const scissor ={"beats paper":1,"beats scissor":1,"beats rock":0};
 const elements ={"paper": paper,"scissor":scissor,"rock":rock};
-let playerScoreBoard = 0;
-let computerScoreBoard = 0;
-let fiveTimesScore = false;
+let P_SCORE_BOARD = 0;
+let C_SCORE_BOARD = 0;
+let IF_MAX_SCORE = false;
 /*GLOBAL */ 
 
 /*Main Functions*/ 
@@ -56,7 +59,7 @@ const computerPlay = ()=>{
     }
 }
 
-const playRound = (pSelection,cSelection)=>{
+const playRound = (pSelection,cSelection,maxScore)=>{
     let userElement = elements[pSelection];
     let computerElement = elements[cSelection];
 
@@ -67,35 +70,32 @@ const playRound = (pSelection,cSelection)=>{
     let resultText;
 
     if(userScore!=computerScore){/*If players have the same score , they selected the same element*/ 
-
         if(userScore>computerScore){
-            playerScoreBoard+=1;
-            if(playerScoreBoard<5){
+            
+            P_SCORE_BOARD+=1;
+            if(P_SCORE_BOARD<maxScore){
                 resultText = `${pSelection} beats ${cSelection}. You win!`;
             }
-            else{
-                fiveTimesScore=true;
-                resultText = `Your Score:${playerScoreBoard}, Computer score:${computerScoreBoard}. You win!`;
-            }
-            
-            
+            else{/* If end of the game */
+                IF_MAX_SCORE=true;
+                resultText = `Your Score:${P_SCORE_BOARD}, Computer score:${C_SCORE_BOARD}. You win!`;
+            }   
         }
         else{
-            computerScoreBoard+=1;
-            if(computerScoreBoard<5){
+            C_SCORE_BOARD+=1;
+            if(C_SCORE_BOARD<maxScore){
                 resultText = `${cSelection} beats ${pSelection}. You lose!`;
             }
-            else{
-                fiveTimesScore=true;
-                resultText = `Your Score:${playerScoreBoard}, Computer score:${computerScoreBoard}. You lose!`;
-            }
-            
+            else{/* If end of the game */
+                IF_MAX_SCORE=true;
+                resultText = `Your Score:${P_SCORE_BOARD}, Computer score:${C_SCORE_BOARD}. You lose!`;
+            }  
         }
-
     }
     else{
         resultText = `The result is draw because both players selected ${pSelection}`;
     }
+
     DOMOutput('.message',resultText,timeTowait);
     return resultText;
     
@@ -128,10 +128,11 @@ selections.forEach((selection)=>{
         }).then((choices)=>{
             let playerSelection = choices.playerSelection;
             let computerSelection = choices.computerSelection;
-            let result = playRound(playerSelection,computerSelection);
+            let result = playRound(playerSelection,computerSelection,5);
             return result;
         }).then((roundResult)=>{
-            setScore(roundResult);
+            let timeToWait = 2500;
+            setScore(roundResult,timeToWait);
             console.log(roundResult);
         });
     });
@@ -142,26 +143,26 @@ function DOMOutput(className,text,timeTowait){
     const Node = document.querySelector(className);
     setTimeout(()=>{Node.textContent = text;},timeTowait);   
 }
-async function setScore(result){
+async function setScore(result,timeToWait){
     /*If not draw then change score*/ 
-    let timeToWait = 2500;
-    if(!fiveTimesScore){
+    
+    if(!IF_MAX_SCORE){
         if(!result.includes('draw')){
             let condition = result.includes('win')?0:1;
             switch(condition){
                 case 0:
-                    DOMOutput('.player-score',playerScoreBoard,timeToWait);
+                    DOMOutput('.player-score',P_SCORE_BOARD,timeToWait);
                     break;
                 case 1:
-                    DOMOutput('.computer-score',computerScoreBoard,timeToWait);
+                    DOMOutput('.computer-score',C_SCORE_BOARD,timeToWait);
                     break;
             }
         }
     }
     else{
-        fiveTimesScore=false;
-        playerScoreBoard=0;
-        computerScoreBoard=0;
+        IF_MAX_SCORE=false;
+        P_SCORE_BOARD=0;
+        C_SCORE_BOARD=0;
         resetScore(timeToWait);   
     }
     
