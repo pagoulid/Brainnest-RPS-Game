@@ -34,14 +34,16 @@ img{
 h1{
     text-align: center;
     font-family: 'Lazer84',sans-serif;
+    color:white;
 }
 h2{
-    
+    /*opacity for rgba: 0.722*/
     text-align: center;
     margin-top: 8rem;
     font-size: 4rem;
     font-family: 'Retrofuturism',sans-serif;
-    background: linear-gradient(red,yellow);
+    
+    background: linear-gradient(rgb(8, 8, 63),blue 50%,rgb(8, 8, 63) 10%,rgb(197, 33, 212 ),white);
     -webkit-text-fill-color: transparent;
     -webkit-background-clip: text;
   
@@ -51,7 +53,8 @@ p{
     display:inline-block;
     font-size: 2.5rem;
     font-family: 'Lazer84',sans-serif;
-    color: rgba(197, 33, 212, 0.722);
+    /*color: rgba(197, 33, 212, 0.722);*/
+    color: white;
 }
 ul{
     list-style: none;
